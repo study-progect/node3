@@ -24,7 +24,7 @@ export class CarController {
         } res.status(200).json(car)
     }
     updateAvailability = async (req: Request, res: Response) => {
-        const updated = await this.carService.updateAvailability(req.params.id, req.body)
+        const updated = await this.carService.updateAvailability(req.params.id, req.body.available)
         if (!updated) {
             throw new AppError("Car not found or invalid update", 404)
              // res.status(404).send("Car not found or invalid update")
