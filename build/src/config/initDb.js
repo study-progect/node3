@@ -21,8 +21,9 @@ export const initDb = () => __awaiter(void 0, void 0, void 0, function* () {
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         email VARCHAR(100) NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        phone VARCHAR(20) NOT NULL )`);
+        phone VARCHAR(20) NOT NULL,
+        password VARCHAR(255) NOT NULL
+        )`);
     yield connection.execute(`CREATE TABLE IF NOT EXISTS rentals(
     id INT AUTO_INCREMENT PRIMARY KEY,
     carId INT NOT NULL,

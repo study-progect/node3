@@ -36,7 +36,7 @@ export class CustomerService implements ICustomerService {
         const insId = (result as any).insertId
         const [rows] = await connect.execute(`SELECT * FROM customers WHERE id = ${insId}`)
         const customerRow = (rows as any[])[0]
-        const customer = customerRow as Customer
+        const customer = customerRow as CustomerResponse
         await this.logger.logAction('customer add', customer)
         return customer
 
@@ -70,7 +70,7 @@ export class CustomerService implements ICustomerService {
             await this.logger.logError(`customer with id not foud`, {customerId:id})
             return undefined;
         }
-        const customer = customerRow as Customer
+        const customer = customerRow as CustomerResponse
         await this.logger.logAction('customer get by id', customer)
         return customer
     }
