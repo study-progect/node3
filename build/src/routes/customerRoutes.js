@@ -1,0 +1,14 @@
+import { Router } from "express";
+import { customerService } from "../config/appConfig.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
+import { param } from "express-validator";
+import { validateRequest } from "../middlewares/validateRequest.js";
+import { CustomerController } from "../controllers/CustomerController.js";
+const router = Router();
+const controller = new CustomerController(customerService);
+router.get("/", asyncHandler(controller.getAllCustomers));
+router.get("/:id", [param("id").isInt({ min: 1 }).withMessage("Invalid id")], asyncHandler(controller.getById));
+router.get("/:id", [param("id").isInt({ min: 1 }).withMessage("Invalid customer ID")], asyncHandler(controller.getById));
+router.post("/", asyncHandler(controller.addCustomer));
+router.delete("/:id", [param("id").isInt({ min: 1 }).withMessage("Invalid customer ID")], validateRequest, asyncHandler(controller.deleteCustomer));
+export const customerRoutes = router;

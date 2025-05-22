@@ -7,15 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { loadAllDada, saveAllDada } from "./config/appConfig.js";
+import { initApp } from "./config/appConfig.js";
 import express, { json } from "express";
 import { apiRouter } from "./routes/apiRoutes.js";
 import { PORT, SOCKED } from "./config/myConfig.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import { mongoLogger } from "./middlewares/reqestLogger.js";
 export const launchServer = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield loadAllDada();
+    yield initApp();
     const app = express();
     app.use(json());
+    app.use(mongoLogger);
     app.use("/api", apiRouter);
     app.use((req, res) => {
         res.status(404).send("Not Found");
@@ -26,7 +28,6 @@ export const launchServer = () => __awaiter(void 0, void 0, void 0, function* ()
     });
     process.on('SIGINT', () => __awaiter(void 0, void 0, void 0, function* () {
         console.log(`saving add showdown`);
-        yield saveAllDada();
         server.close(() => process.exit(0));
     }));
 });

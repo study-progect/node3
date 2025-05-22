@@ -21,21 +21,33 @@ export class CarController {
             res.status(200).json(cars);
         });
         this.getCarById = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const car = yield this.carService.getCarById(req.params.id);
+            const id = parseInt(req.params.id, 10);
+            if (isNaN(id)) {
+                throw new AppError("Invalid car id", 400);
+            }
+            const car = yield this.carService.getCarById(id);
             if (!car) {
                 throw new AppError("Car not found", 404);
             }
             res.status(200).json(car);
         });
         this.updateAvailability = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const updated = yield this.carService.updateAvailability(req.params.id, req.body);
+            const id = parseInt(req.params.id, 10);
+            if (isNaN(id)) {
+                throw new AppError("Invalid car id", 400);
+            }
+            const updated = yield this.carService.updateAvailability(id, req.body.available);
             if (!updated) {
                 throw new AppError("Car not found or invalid update", 404);
             }
             res.sendStatus(200);
         });
         this.deleteCar = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const car = yield this.carService.deleteCar(req.params.id);
+            const id = parseInt(req.params.id, 10);
+            if (isNaN(id)) {
+                throw new AppError("Invalid car id", 400);
+            }
+            const car = yield this.carService.deleteCar(id);
             if (!car) {
                 throw new AppError("Car not found or invalid delete", 404);
             }

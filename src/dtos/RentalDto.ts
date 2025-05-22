@@ -1,6 +1,6 @@
 export interface RentalDto {
-    carId: string;
-    customerId: string;
+    carId: number;
+    customerId: number;
     startDate: string;
     endDate: string;
 }

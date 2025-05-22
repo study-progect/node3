@@ -18,4 +18,5 @@ export class RentalController {
         const rentals = await this.rentalService.getAllRentals()
         res.status(200).json(rentals);
     }
+
 }

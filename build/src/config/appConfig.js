@@ -7,19 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import path from "path";
 import { CarService } from "../services/CarService.js";
-import { FileStorage } from "../storages/FileStorage.js";
-const carPath = path.resolve("data", "cars.json");
-export const carService = new CarService(new FileStorage(carPath));
-export const persistable = [carService];
-export const loadAllDada = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield Promise.all([
-        persistable.map(p => p.load())
-    ]);
-});
-export const saveAllDada = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield Promise.all([
-        persistable.map(p => p.save())
-    ]);
+import { LoggerService } from "../services/LoggerService.js";
+import { CustomerService } from "../services/CustomerService.js";
+import { RentalService } from "../services/RentalService.js";
+import { mongoConnection } from "./mongoConfig.js";
+import { initDb } from "./initDb.js";
+export const carService = new CarService(LoggerService);
+export const customerService = new CustomerService(LoggerService);
+export const rentalService = new RentalService(carService, customerService, LoggerService);
+export const initApp = () => __awaiter(void 0, void 0, void 0, function* () {
+    yield mongoConnection();
+    yield initDb();
+    console.log('app init');
 });

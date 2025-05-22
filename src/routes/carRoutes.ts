@@ -12,12 +12,12 @@ const controller = new CarController(carService);
 // router.get("/", controller.getAllCars)
 router.get("/", asyncHandler(controller.getAllCars))
 // router.get("/:id", controller.getCarById)
-router.get("/:id",[param("id").isMongoId().withMessage("Invalid id")],
+router.get("/:id",[param("id").isInt({min:1}).withMessage("Invalid id")],
     asyncHandler(
         controller.getCarById))
 router.get(
     "/:id",
-    [param("id").isMongoId().withMessage("Invalid car ID")],
+    [param("id").isInt({min:1}).withMessage("Invalid car ID")],
     validateRequest,
     asyncHandler(controller.getCarById)
 );
@@ -25,11 +25,11 @@ router.post("/", validateWithSchema(carSchema), asyncHandler(controller.addCar))
 // router.delete("/:id", controller.deleteCar)
 router.delete(
     "/:id",
-    [param("id").isMongoId().withMessage("Invalid car ID")],
+    [param("id").isInt({min:1}).withMessage("Invalid car ID")],
     validateRequest,
     asyncHandler(controller.deleteCar)
 );
-router.patch("/:id/availability",[param("id").isMongoId().withMessage("Invalid car ID")],
+router.patch("/:id/availability",[param("id").isInt({min:1}).withMessage("Invalid car ID")],
     validateRequest,
     asyncHandler(controller.updateAvailability))
 export const carRoutes = router

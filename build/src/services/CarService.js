@@ -7,82 +7,76 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { v4 as uuidv4 } from "uuid";
+import { LoggerService } from "./LoggerService.js";
+import { sqlConnection } from "../config/sqlConfig.js";
 export class CarService {
-    constructor(storage) {
-        this.storage = storage;
-        this.cars = [];
+    constructor(logger = LoggerService) {
+        this.logger = logger;
     }
     addCar(carDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newCar = {
-                id: uuidv4(),
-                model: carDto.model,
-                brand: carDto.brand,
-                year: carDto.year,
-                dailyPrice: carDto.dailyPrice,
-                available: true,
-                rentalIds: []
-            };
-            this.cars.push(newCar);
-            yield this.save();
-            return newCar;
+            const connect = yield sqlConnection();
+            const insertQuery = `INSERT INTO cars (model, brand, year, dailyPrice, available) VALUES (?,?,?,?, true)`;
+            const [result] = yield connect.execute(insertQuery, [carDto.model, carDto.brand, carDto.year, carDto.dailyPrice]);
+            const insId = result.insertId;
+            const [rows] = yield connect.execute(`SELECT * FROM cars WHERE id = ${insId}`);
+            const carRow = rows[0];
+            const car = carRow;
+            yield this.logger.logAction('car add', car);
+            return car;
         });
     }
     getAllCar() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.cars;
+            const connect = yield sqlConnection();
+            const [rows] = yield connect.execute(`SELECT * FROM cars`);
+            const cars = rows.map((row) => {
+                const car = row;
+                return car;
+            });
+            yield this.logger.logAction('car get all', cars);
+            return cars;
         });
     }
     getCarById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.cars.find((c) => c.id === id);
+            const connect = yield sqlConnection();
+            const [rows] = yield connect.execute(`SELECT * FROM cars WHERE id = ${id}`);
+            const carRow = rows[0];
+            if (!carRow) {
+                yield this.logger.logError(`car with id not foud`, { carId: id });
+                return undefined;
+            }
+            const car = carRow;
+            yield this.logger.logAction('car get by id', car);
+            return car;
         });
     }
     updateAvailability(id, availability) {
         return __awaiter(this, void 0, void 0, function* () {
-            const car = yield this.getCarById(id);
-            if (!car) {
-                return false;
+            const connect = yield sqlConnection();
+            const [result] = yield connect.execute(`UPDATE cars SET available = ? WHERE id = ?`, [availability, id]);
+            const success = result.affectedRows > 0;
+            if (success) {
+                yield this.logger.logAction('car update availability', { carId: id, availability });
             }
-            car.available = availability;
-            yield this.save();
-            return true;
+            else
+                yield this.logger.logError(`car update availability failed`, { carId: id, availability });
+            return success;
         });
     }
     deleteCar(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const index = this.cars.findIndex((car) => car.id === id);
-            if (index === -1) {
-                throw "No car found with id ";
+            const connect = yield sqlConnection();
+            const car = this.getCarById(id);
+            const [result] = yield connect.execute(`DELETE FROM cars WHERE id = ${id}`);
+            const success = result.affectedRows > 0;
+            if (success) {
+                yield this.logger.logAction('car delete', { carId: id });
             }
-            const car = yield this.getCarById(id);
-            this.cars.splice(index, 1);
-            yield this.save();
+            else
+                yield this.logger.logError(`car delete failed`, { carId: id });
             return car;
-        });
-    }
-    save() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.storage.save(this.cars);
-        });
-    }
-    load() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.cars = yield this.storage.load();
-        });
-    }
-    addRentalToCar(carId, rentalId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const car = yield this.getCarById(carId);
-            if (!car) {
-                throw "Car not found";
-            }
-            if (!car.rentalIds.includes(rentalId)) {
-                car.rentalIds.push(rentalId);
-                yield this.save();
-            }
-            return true;
         });
     }
 }

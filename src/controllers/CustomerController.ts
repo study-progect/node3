@@ -10,7 +10,11 @@ export class CustomerController  {
 
      }
      getById = async (req: Request, res: Response) => {
-        const custom = await this.customerService.getCustomerById(req.params.id)
+         const id = parseInt(req.params.id,10)
+         if (isNaN(id)) {
+             throw new AppError("Invalid customer id", 400)
+         }
+        const custom = await this.customerService.getCustomerById(id)
          if (!custom) {
              throw new AppError("Customer not found or invalid customer", 404)
          }
@@ -22,7 +26,11 @@ export class CustomerController  {
          res.status(201).json(customer)
      }
      deleteCustomer = async (req: Request, res: Response) => {
-        const custom = await this.customerService.deleteCustomer(req.params.id)
+         const id = parseInt(req.params.id,10)
+         if (isNaN(id)) {
+             throw new AppError("Invalid customer id", 400)
+         }
+        const custom = await this.customerService.deleteCustomer(id)
          if (!custom) {
              throw new AppError("Customer not found or invalid customer", 404)
          }

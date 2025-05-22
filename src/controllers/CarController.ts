@@ -16,7 +16,11 @@ export class CarController {
         res.status(200).json(cars)
     }
     getCarById = async (req: Request, res: Response) => {
-        const car = await this.carService.getCarById(req.params.id)
+        const id = parseInt(req.params.id,10)
+        if (isNaN(id)) {
+            throw new AppError("Invalid car id", 400)
+        }
+        const car = await this.carService.getCarById(id)
         if (!car) {
             //  res.status(404).send("Car not found")
             // return
@@ -24,7 +28,11 @@ export class CarController {
         } res.status(200).json(car)
     }
     updateAvailability = async (req: Request, res: Response) => {
-        const updated = await this.carService.updateAvailability(req.params.id, req.body.available)
+        const id = parseInt(req.params.id,10)
+        if (isNaN(id)) {
+            throw new AppError("Invalid car id", 400)
+        }
+        const updated = await this.carService.updateAvailability(id, req.body.available)
         if (!updated) {
             throw new AppError("Car not found or invalid update", 404)
              // res.status(404).send("Car not found or invalid update")
@@ -33,7 +41,11 @@ export class CarController {
         res.sendStatus(200)
     }
     deleteCar = async (req: Request, res: Response) => {
-        const car = await this.carService.deleteCar(req.params.id)
+        const id = parseInt(req.params.id,10)
+        if (isNaN(id)) {
+            throw new AppError("Invalid car id", 400)
+        }
+        const car = await this.carService.deleteCar(id)
         if (!car) {
             throw new AppError("Car not found or invalid delete", 404)
             // res.status(404).send("Car not found or invalid delete")
