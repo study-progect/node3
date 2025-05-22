@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 export const mongoConnection = async () => {
     const uri = process.env.MONGO_URI;
+    console.log(uri)
     if (!uri) {
         console.log('MONGO_URI not found')
         process.exit(1);
