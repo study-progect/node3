@@ -50,7 +50,7 @@ export class CustomerService {
             const insertQuery = `INSERT INTO customers (name, email, password,phone) VALUES (?,?,?,?)`;
             const [result] = yield connect.execute(insertQuery, [dto.name, dto.email, hashedPassword, dto.phone]);
             const insId = result.insertId;
-            const [rows] = yield connect.execute(`SELECT * FROM customers WHERE id = ${insId}`);
+            const [rows] = yield connect.execute(`SELECT id, name, email, phone FROM customers WHERE id = ${insId}`);
             const customerRow = rows[0];
             const customer = customerRow;
             yield this.logger.logAction('customer add', customer);
@@ -75,14 +75,14 @@ export class CustomerService {
     getAllCustomers() {
         return __awaiter(this, void 0, void 0, function* () {
             const connect = yield sqlConnection();
-            const [rows] = yield connect.execute(`SELECT * FROM customers`);
+            const [rows] = yield connect.execute(`SELECT id, name, email, phone FROM customers`);
             return rows;
         });
     }
     getCustomerById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const connect = yield sqlConnection();
-            const [rows] = yield connect.execute(`SELECT * FROM customers WHERE id = ${id}`);
+            const [rows] = yield connect.execute(`SELECT id, name, email, phone FROM customers WHERE id = ${id}`);
             const customerRow = rows[0];
             if (!customerRow) {
                 yield this.logger.logError(`customer with id not foud`, { customerId: id });

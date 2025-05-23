@@ -34,7 +34,8 @@ export class CustomerService implements ICustomerService {
         const insertQuery = `INSERT INTO customers (name, email, password,phone) VALUES (?,?,?,?)`
         const [result] = await connect.execute(insertQuery, [dto.name, dto.email, hashedPassword,dto.phone])
         const insId = (result as any).insertId
-        const [rows] = await connect.execute(`SELECT * FROM customers WHERE id = ${insId}`)
+        // const [rows] = await connect.execute(`SELECT * FROM customers WHERE id = ${insId}`)
+        const [rows] = await connect.execute(`SELECT id, name, email, phone FROM customers WHERE id = ${insId}`)
         const customerRow = (rows as any[])[0]
         const customer = customerRow as CustomerResponse
         await this.logger.logAction('customer add', customer)
@@ -58,13 +59,15 @@ export class CustomerService implements ICustomerService {
 
     async getAllCustomers(): Promise<CustomerResponse[]> {
         const connect = await sqlConnection()
-        const [rows] = await connect.execute(`SELECT * FROM customers`)
+        // const [rows] = await connect.execute(`SELECT * FROM customers`)
+        const [rows] = await connect.execute(`SELECT id, name, email, phone FROM customers`)
         return (rows as CustomerResponse[])
     }
 
     async getCustomerById(id: number): Promise<CustomerResponse | undefined> {
         const connect = await sqlConnection()
-        const [rows] = await connect.execute(`SELECT * FROM customers WHERE id = ${id}`)
+        // const [rows] = await connect.execute(`SELECT * FROM customers WHERE id = ${id}`)
+        const [rows] = await connect.execute(`SELECT id, name, email, phone FROM customers WHERE id = ${id}`)
         const customerRow = (rows as any[])[0]
         if(!customerRow) {
             await this.logger.logError(`customer with id not foud`, {customerId:id})
