@@ -5,12 +5,57 @@ import {LoggerService} from "./LoggerService.js";
 import {sqlConnection} from "../config/sqlConfig.js";
 // import {CarModelMongo} from "../models/Car.js";
 import bcrypt from "bcrypt";
+import {roles} from "../config/roles.js";
 export class CustomerService implements ICustomerService {
 
     constructor(private logger =LoggerService) {
     }
 
-    async validateLogin(email: string, password: string): Promise<CustomerResponse | undefined> {
+
+    async updateCustomerProfile(id: number, dto: Partial<CustomerDto>): Promise<CustomerResponse | undefined> {
+        const connect = await sqlConnection()
+        const updates:string[] = []
+        const values:any[] = []
+        if(dto.name){
+            updates.push('name=?')
+            values.push(dto.name)
+        }
+        if(dto.email){
+            updates.push('email=?')
+            values.push(dto.email)
+        }
+        if(dto.phone){
+            updates.push('phone=?')
+            values.push(dto.phone)
+        }
+        if(dto.password){
+            const hashedPassword = await bcrypt.hash(dto.password, 10)
+            updates.push('password=?')
+            values.push(hashedPassword)
+        }
+        if(updates.length === 0){
+            return await this.getCustomerById(id) || undefined
+        }
+        const updateCustomer = `UPDATE customers SET ${updates.join(', ')} WHERE id=?`
+        values.push(id)
+        await connect.execute(updateCustomer,values)
+        await this.logger.logAction(`customer profile update ${id}`)
+        return await this.getCustomerById(id) || undefined
+    }
+
+    async changeCustomerRole(id: number, roleName: string): Promise<CustomerResponse | undefined> {
+        const connect = await sqlConnection()
+        const role = roles[roleName];
+        if(!role){
+            return undefined
+        }
+        const updatesRolesQuery = `UPDATE customers SET role=? WHERE id=?`
+        await connect.execute(updatesRolesQuery, [role.name,id])
+        await this.logger.logAction(`customer role update ${id} new role: ${role.name}`)
+        return await this.getCustomerById(id) || undefined
+
+    }
+    async validateLogin(email: string, password: string): Promise<Omit<Customer, 'password'> | undefined> {
         const connect = await sqlConnection()
         const [rows] = await connect.execute(`SELECT * FROM customers WHERE email = ${email}`)
         const user = (rows as any[])[0]
@@ -24,14 +69,14 @@ export class CustomerService implements ICustomerService {
             return undefined;
         }
         const {password:_, ...rest} = user
-        return rest as CustomerResponse
+        return rest as Customer
     }
 
     async addCustomer(dto: CustomerDto): Promise<CustomerResponse> {
         const connect = await sqlConnection()
         const hashedPassword = await bcrypt.hash(dto.password, 10)
         
-        const insertQuery = `INSERT INTO customers (name, email, password,phone) VALUES (?,?,?,?)`
+        const insertQuery = `INSERT INTO customers (name, email, password,phone,role) VALUES (?,?,?,?,?)`
         const [result] = await connect.execute(insertQuery, [dto.name, dto.email, hashedPassword,dto.phone])
         const insId = (result as any).insertId
         // const [rows] = await connect.execute(`SELECT * FROM customers WHERE id = ${insId}`)

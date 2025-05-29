@@ -7,6 +7,7 @@ export interface ICustomerService{
     getCustomerById(id:number):Promise<CustomerResponse | undefined>,
     deleteCustomer(id:number):Promise<CustomerResponse| undefined>,
     // addRentalToCustomer(id:number,rentalId:number):Promise<boolean>,
-    validateLogin(email:string,password:string):Promise<CustomerResponse | undefined>
-
+    validateLogin(email:string,password:string):Promise<Omit<Customer, 'password'> | undefined>
+    updateCustomerProfile(id:number,dto:Partial<CustomerDto>):Promise<CustomerResponse | undefined>,
+    changeCustomerRole(id:number,roleName:string):Promise<CustomerResponse | undefined>,
 }

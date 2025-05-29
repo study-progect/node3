@@ -1,4 +1,5 @@
 import  mongoose,{Schema,model} from "mongoose";
+import {Role} from "../types/Role.js";
 
 export interface Customer {
     id: number;
@@ -6,7 +7,7 @@ export interface Customer {
     email: string;
     phone: string;
     password: string;
-
+    role: Role;
     // rentalIds: string[];
 }
 export interface CustomerResponse {
