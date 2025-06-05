@@ -7,6 +7,7 @@ import {CustomerService} from "../services/CustomerService.js";
 import {RentalService} from "../services/RentalService.js";
 import {mongoConnection} from "./mongoConfig.js";
 import {initDb} from "./initDb.js";
+import {createRootAdmin} from "./createRootAdmin.js";
 
 // const carPath = path.resolve("data", "cars.json")
 export const carService = new CarService(LoggerService)
@@ -15,6 +16,7 @@ export const rentalService = new RentalService(carService,customerService,Logger
 export const initApp = async () => {
     await mongoConnection()
     await initDb()
+    await createRootAdmin()
     console.log('app init')
 }
 // export const carStorage = new FileStorage<any>(carPath)

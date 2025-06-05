@@ -68,16 +68,23 @@ export class CustomerService implements ICustomerService {
             await this.logger.logError(`customer password not match`, {email})
             return undefined;
         }
-        const {password:_, ...rest} = user
-        return rest as Customer
+        const role = roles[user.role]
+        if(!role){
+            await this.logger.logError(`customer with email not foud`, {email})
+            return undefined;
+        }
+
+        // const {password:_, ...rest} = user
+        // return rest as Customer
+        return {id:user.id,name:user.name,email:user.email,phone:user.phone,role:role}
     }
 
     async addCustomer(dto: CustomerDto): Promise<CustomerResponse> {
         const connect = await sqlConnection()
         const hashedPassword = await bcrypt.hash(dto.password, 10)
         
-        const insertQuery = `INSERT INTO customers (name, email, password,phone,role) VALUES (?,?,?,?,?)`
-        const [result] = await connect.execute(insertQuery, [dto.name, dto.email, hashedPassword,dto.phone])
+        const insertQuery = `INSERT INTO customers (name, email,phone,password,role) VALUES (?,?,?,?,?)`
+        const [result] = await connect.execute(insertQuery, [dto.name, dto.email,dto.phone,hashedPassword,roles.CUSTOMER.name])
         const insId = (result as any).insertId
         // const [rows] = await connect.execute(`SELECT * FROM customers WHERE id = ${insId}`)
         const [rows] = await connect.execute(`SELECT id, name, email, phone FROM customers WHERE id = ${insId}`)

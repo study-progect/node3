@@ -13,11 +13,13 @@ import { CustomerService } from "../services/CustomerService.js";
 import { RentalService } from "../services/RentalService.js";
 import { mongoConnection } from "./mongoConfig.js";
 import { initDb } from "./initDb.js";
+import { createRootAdmin } from "./createRootAdmin.js";
 export const carService = new CarService(LoggerService);
 export const customerService = new CustomerService(LoggerService);
 export const rentalService = new RentalService(carService, customerService, LoggerService);
 export const initApp = () => __awaiter(void 0, void 0, void 0, function* () {
     yield mongoConnection();
     yield initDb();
+    yield createRootAdmin();
     console.log('app init');
 });

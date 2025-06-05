@@ -42,5 +42,39 @@ export class CustomerController {
             }
             res.json(custom).sendStatus(204);
         });
+        this.updateCustomerProfile = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = parseInt(req.params.id, 10);
+            if (isNaN(id)) {
+                throw new AppError("Invalid customer id", 400);
+            }
+            const loggedUser = req.customer;
+            if (!loggedUser || !loggedUser.role) {
+                throw new AppError("Invalid customer role", 403);
+            }
+            if (loggedUser.role !== "ADMIN" && loggedUser.role !== "ROOT_ADMIN") {
+                if (loggedUser.id !== id) {
+                    throw new AppError("you can update ony your own data", 403);
+                }
+            }
+            const updated = yield this.customerService.updateCustomerProfile(id, req.body);
+            if (!updated) {
+                throw new AppError("Customer not found or invalid customer", 404);
+            }
+            res.json(updated).status(201);
+            return updated;
+        });
+        this.changeCustomerRole = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = parseInt(req.params.id, 10);
+            const { role } = req.body;
+            if (isNaN(id) || !role) {
+                throw new AppError("Invalid customer id or role", 400);
+            }
+            const updated = yield this.customerService.changeCustomerRole(id, role);
+            if (!updated) {
+                throw new AppError("Customer not found or invalid customer", 404);
+            }
+            res.json(updated).status(201);
+            return updated;
+        });
     }
 }

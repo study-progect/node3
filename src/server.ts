@@ -13,7 +13,6 @@ export const launchServer = async () => {
     app.use(json())
     // app.use(fileLogger)
     app.use(mongoLogger)
-
     app.use("/api", apiRouter)
     app.use((req: express.Request, res: express.Response) => {
         res.status(404).send("Not Found")
