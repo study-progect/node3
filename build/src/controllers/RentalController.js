@@ -23,5 +23,21 @@ export class RentalController {
             const rentals = yield this.rentalService.getAllRentals();
             res.status(200).json(rentals);
         });
+        this.getRentalById = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = parseInt(req.params.id, 10);
+            const rental = yield this.rentalService.getRentalById(id);
+            if (!rental) {
+                throw new AppError("Can't find rental", 404);
+            }
+            res.status(200).json(rental);
+        });
+        this.cancelRental = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = parseInt(req.params.id, 10);
+            const success = yield this.rentalService.cancelRental(id);
+            if (!success) {
+                throw new AppError("rental cancel failed", 400);
+            }
+            res.status(200).json({ message: success });
+        });
     }
 }

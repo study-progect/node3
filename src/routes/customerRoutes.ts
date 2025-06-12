@@ -9,6 +9,7 @@ import {carSchema} from "../schemas/carSchema.js";
 import {CustomerController} from "../controllers/CustomerController.js";
 import {authenticate} from "../middlewares/authenticate.js";
 import {authorize} from "../middlewares/authorize.js";
+import {customerSchema} from "../schemas/customerSchema.js";
 const router = Router();
 
 const controller = new CustomerController(customerService);
@@ -28,7 +29,9 @@ router.get(
     [param("id").isInt({min:1}).withMessage("Invalid customer ID")],
     asyncHandler(controller.getById)
 );
-router.post("/", asyncHandler(controller.addCustomer))
+router.post("/",
+    validateWithSchema(customerSchema),
+    asyncHandler(controller.addCustomer))
 // router.delete("/:id", controller.deleteCar)
 
 router.delete(
@@ -44,6 +47,7 @@ router.patch("/:id/profile",
     authorize('user:updateProfile'),
     [param("id").isInt({min:1}).withMessage("ID must be positive integer")],
     validateRequest,
+    validateWithSchema(customerSchema),
     asyncHandler(controller.updateCustomerProfile))
 router.patch("/:id/role",
     authenticate,

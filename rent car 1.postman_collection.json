@@ -1,0 +1,236 @@
+{
+	"info": {
+		"_postman_id": "83cab046-9466-415c-a841-83c03c1c1371",
+		"name": "rent car 1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "36626095"
+	},
+	"item": [
+		{
+			"name": "add car",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibmFtZSI6IkFsaWNlIiwiZW1haWwiOiJhbGljZUBleGFtcGxlLmNvbSIsInBob25lIjoiMTIzNDU2Nzg5MCIsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc0OTc0ODM2MCwiZXhwIjoxNzQ5NzU1NTYwfQ.-zQsoraC6zT4_dl1DSc7OiMPBhliXOeg9z0AF4yUMrQ"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"model\": \"Corolla\",\r\n  \"brand\": \"Toyota\",\r\n  \"year\": 2025,\r\n  \"dailyPrice\": 450\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3005/api/cars"
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"email\":\"alice@example.com \",\r\n \"password\":\"1234567\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3005/api/auth/login"
+			},
+			"response": []
+		},
+		{
+			"name": "get all cars",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3005/api/cars"
+			},
+			"response": []
+		},
+		{
+			"name": "delete by id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:3005/api/cars/10"
+			},
+			"response": []
+		},
+		{
+			"name": "available",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"available\": true\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3005/api/cars/68259955b2ff691605ddb313/availability"
+			},
+			"response": []
+		},
+		{
+			"name": "add client",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Alice New\",\r\n  \"email\": \"alicnew@example.com\",\r\n  \"phone\": \"1234567890\",\r\n  \"password\": \"1234567\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3005/api/customers"
+			},
+			"response": []
+		},
+		{
+			"name": "get all clients",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3005/api/customers"
+			},
+			"response": []
+		},
+		{
+			"name": "delete client by id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:3005/api/customers/<id>"
+			},
+			"response": []
+		},
+		{
+			"name": "create rental",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibmFtZSI6IkFsaWNlIE5ldyIsImVtYWlsIjoiYWxpY25ld0BleGFtcGxlLmNvbSIsInBob25lIjoiMTIzNDU2Nzg5MCIsInJvbGUiOiJNQU5BR0VSIiwiaWF0IjoxNzQ5NzQ4NDM3LCJleHAiOjE3NDk3NTU2Mzd9.djdzTZ2AvXqCHojmTjVuBOSAOGmUhtq1MwiDLF2AKfs"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"carId\": 1,\r\n  \"customerId\": 2,\r\n  \"startDate\": \"2025-07-02\",\r\n  \"endDate\": \"2025-07-05\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3005/api/rentals"
+			},
+			"response": []
+		},
+		{
+			"name": "get all rentals",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3005/api/rentals"
+			},
+			"response": []
+		},
+		{
+			"name": "cancel rent",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": "http://localhost:3005/api/rentals/68259be7e8eab9e9af5e31fc/cancel"
+			},
+			"response": []
+		},
+		{
+			"name": "change role",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IlN1cGVyIEFkbWluIiwiZW1haWwiOiJyb290QGFkbWluLmNvbSIsInBob25lIjoiMTExMTExMTExMSIsInJvbGUiOiJST09UX0FETUlOIiwiaWF0IjoxNzQ5NzQ1MjIyLCJleHAiOjE3NDk3NTI0MjJ9.PHHHRjG1Yz8uGQZKRXo56dJQlSS7Z1gvqHK-E1Vn3_4"
+					}
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"role\":\"MANAGER\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3005/api/customers/3/role"
+			},
+			"response": []
+		},
+		{
+			"name": "get Rental By Id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibmFtZSI6IkFsaWNlIE5ldyIsImVtYWlsIjoiYWxpY25ld0BleGFtcGxlLmNvbSIsInBob25lIjoiMTIzNDU2Nzg5MCIsInJvbGUiOiJNQU5BR0VSIiwiaWF0IjoxNzQ5NzQ4NDM3LCJleHAiOjE3NDk3NTU2Mzd9.djdzTZ2AvXqCHojmTjVuBOSAOGmUhtq1MwiDLF2AKfs"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": "http://localhost:3005/api/rentals/1"
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Rental",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibmFtZSI6IkFsaWNlIE5ldyIsImVtYWlsIjoiYWxpY25ld0BleGFtcGxlLmNvbSIsInBob25lIjoiMTIzNDU2Nzg5MCIsInJvbGUiOiJNQU5BR0VSIiwiaWF0IjoxNzQ5NzQ4NDM3LCJleHAiOjE3NDk3NTU2Mzd9.djdzTZ2AvXqCHojmTjVuBOSAOGmUhtq1MwiDLF2AKfs"
+					}
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3005/api/rentals/1/cancel"
+			},
+			"response": []
+		}
+	]
+}

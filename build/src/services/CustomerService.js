@@ -63,7 +63,7 @@ export class CustomerService {
     validateLogin(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             const connect = yield sqlConnection();
-            const [rows] = yield connect.execute(`SELECT * FROM customers WHERE email = ${email}`);
+            const [rows] = yield connect.execute(`SELECT * FROM customers WHERE email = ?`, [email]);
             const user = rows[0];
             if (!user) {
                 yield this.logger.logError(`customer with email not foud`, { email });

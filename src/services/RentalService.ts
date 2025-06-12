@@ -19,11 +19,37 @@ export class RentalService implements IRentalService{
 
     }
 
-    getRentalById(id: number): Promise<Rental | undefined> {
-        throw new Error("Method not implemented.");
+    async getRentalById(id: number): Promise<Rental | undefined> {
+        const connection = await sqlConnection()
+        const [rows] = await connection.execute('SELECT * FROM rentals WHERE id = ?', [id]);
+        const rental = (rows as Rental[])[0];
+        if (rental) {
+            await this.logger.logAction('rental get by id', rental);
+        } else {
+            await this.logger.logError('rental not found', id);
+        }
+        return rental;
     }
-    cancelRental(id: number): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async cancelRental(id: number): Promise<boolean> {
+        const connection = await sqlConnection()
+        const [rows] = await connection.execute('SELECT * FROM rentals WHERE id = ?', [id]);
+        const rental = (rows as Rental[])[0];
+        if(!rental) {
+            await this.logger.logError('rental not found', id);
+            return Promise.resolve(false);
+        }
+        if(rental.status === 'cancelled') {
+            await this.logger.logError('rental already cancelled', id);
+            return Promise.resolve(false);
+        }
+        const [result] = await connection.execute(`UPDATE rentals set status = 'cancelled' WHERE id = ?`, [id]);
+        const affected = (result as any).affectedRows > 0;
+        if (affected) {
+            await this.logger.logAction('rental cancelled', id);
+        } else {
+            await this.logger.logError('rental no rows affected', id);
+        }
+        return affected;
     }
     async createRental(dto:RentalDto):Promise<Rental | null> {
 
@@ -34,10 +60,10 @@ export class RentalService implements IRentalService{
             return null;
         }
         const days = (new Date(dto.endDate).getTime() - new Date(dto.startDate).getTime()) / (1000 * 3600 * 24)
-        const totalCost = Math.round(days * car.dailyPrice)
+        const totalPrice = Math.round(days * car.dailyPrice)
         const connection = await sqlConnection()
-        const insertQuery = `INSERT INTO rentals (carId, customerId, startDate, endDate, totalCost, status) VALUES (?,?,?,?,?,?)`
-        const [result] = await connection.execute(insertQuery, [dto.carId, dto.customerId, dto.startDate, dto.endDate, totalCost, "active"])
+        const insertQuery = `INSERT INTO rentals (carId, customerId, startDate, endDate, totalPrice, status) VALUES (?,?,?,?,?,?)`
+        const [result] = await connection.execute(insertQuery, [dto.carId, dto.customerId, dto.startDate, dto.endDate, totalPrice, "active"])
         const insId = (result as any).insertId
         const [rows] = await connection.execute(`SELECT * FROM rentals WHERE id = ${insId}`)
         const rentalRow = (rows as any[])[0]

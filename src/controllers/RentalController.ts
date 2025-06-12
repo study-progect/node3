@@ -18,5 +18,22 @@ export class RentalController {
         const rentals = await this.rentalService.getAllRentals()
         res.status(200).json(rentals);
     }
+    getRentalById = async (req: Request, res: Response) => {
+        const id = parseInt(req.params.id,10)
+        const rental = await this.rentalService.getRentalById(id)
+        if(!rental){
+            throw new AppError("Can't find rental", 404);
+        }
+        res.status(200).json(rental);
+    }
+    cancelRental = async (req: Request, res: Response) => {
+        const id = parseInt(req.params.id,10)
+        const success = await this.rentalService.cancelRental(id)
+        if(!success){
+            throw new AppError("rental cancel failed", 400);
+        }
+        res.status(200).json({message:success});
+
+    }
 
 }

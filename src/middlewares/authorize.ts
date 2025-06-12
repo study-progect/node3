@@ -7,7 +7,7 @@ export function authorize(requiredPermission:Permission) {
     return (req: Request, res: Response, next: NextFunction) => {
         const customer = (req as any).customer;
         if (!customer || !customer.role || !Array.isArray(customer.role.permissions) ||
-        !Array.isArray(customer.role.permissions.includes(requiredPermission))) {
+        !(customer.role.permissions.includes(requiredPermission))) {
             res.status(403).json({error: 'forbidden no permission'})
             return;
         }

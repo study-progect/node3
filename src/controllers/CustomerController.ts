@@ -48,7 +48,7 @@ export class CustomerController  {
         if (!loggedUser || !loggedUser.role) {
             throw new AppError("Invalid customer role", 403)
         }
-        if(loggedUser.role !== "ADMIN" && loggedUser.role !== "ROOT_ADMIN") {
+        if(loggedUser.role.name !== "ADMIN" && loggedUser.role.name !== "ROOT_ADMIN") {
             if(loggedUser.id !== id) {
                 throw new AppError("you can update ony your own data", 403)
             }
@@ -58,7 +58,8 @@ export class CustomerController  {
         if (!updated) {
             throw new AppError("Customer not found or invalid customer", 404)
         }
-        res.json(updated).status(201)
+        // res.json(updated).status(201
+            res.status(201).json(updated)
         return updated
     }
 
@@ -72,7 +73,8 @@ export class CustomerController  {
         if (!updated) {
             throw new AppError("Customer not found or invalid customer", 404)
         }
-        res.json(updated).status(201)
+        res.status(201).json(updated)
+
         return updated
     }
 }

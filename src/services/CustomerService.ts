@@ -57,7 +57,8 @@ export class CustomerService implements ICustomerService {
     }
     async validateLogin(email: string, password: string): Promise<Omit<Customer, 'password'> | undefined> {
         const connect = await sqlConnection()
-        const [rows] = await connect.execute(`SELECT * FROM customers WHERE email = ${email}`)
+        // const [rows] = await connect.execute(`SELECT * FROM customers WHERE email = ${email}`)
+        const [rows] = await connect.execute(`SELECT * FROM customers WHERE email = ?`, [email]);
         const user = (rows as any[])[0]
         if(!user) {
             await this.logger.logError(`customer with email not foud`, {email})

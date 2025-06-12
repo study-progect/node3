@@ -17,5 +17,4 @@ export const carSchema = Joi.object({
     dailyPrice: Joi.number().required().positive().messages({
         "any.required": "daily price is required","number.positive": "daily price must be positive"
     })
-
 })
