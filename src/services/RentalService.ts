@@ -74,7 +74,7 @@ export class RentalService implements IRentalService{
         const insertQuery = `INSERT INTO rentals (carId, customerId, startDate, endDate, totalPrice, status) VALUES (?,?,?,?,?,?)`
         const [result] = await connection.execute(insertQuery, [car.id, dto.customerId, dto.startDate, dto.endDate, totalPrice, "active"])
         const insId = (result as any).insertId
-        const [rows] = await connection.execute(`SELECT * FROM rentals WHERE id = ${insId}`)
+        const [rows] = await connection.execute(`SELECT * FROM rentals WHERE id = ?`,[insId])
         const rentalRow = (rows as any[])[0]
         const rental = rentalRow as Rental
         await this.blockCarDates(car.id,dto.startDate,dto.endDate)

@@ -74,7 +74,7 @@ export class RentalService {
             const insertQuery = `INSERT INTO rentals (carId, customerId, startDate, endDate, totalPrice, status) VALUES (?,?,?,?,?,?)`;
             const [result] = yield connection.execute(insertQuery, [car.id, dto.customerId, dto.startDate, dto.endDate, totalPrice, "active"]);
             const insId = result.insertId;
-            const [rows] = yield connection.execute(`SELECT * FROM rentals WHERE id = ${insId}`);
+            const [rows] = yield connection.execute(`SELECT * FROM rentals WHERE id = ?`, [insId]);
             const rentalRow = rows[0];
             const rental = rentalRow;
             yield this.blockCarDates(car.id, dto.startDate, dto.endDate);
