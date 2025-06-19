@@ -55,21 +55,29 @@ export class RentalService {
     }
     createRental(dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const car = yield this.carService.getCarById(dto.carId);
             const custom = yield this.customerService.getCustomerById(dto.customerId);
-            if (!car || !car.available || !custom) {
-                yield this.logger.logError(`car or customer not found or car not available`, { carId: dto.carId, customerId: dto.customerId });
+            if (!custom) {
+                yield this.logger.logError(`customer not found or car not available`, { customerId: dto.customerId });
+                return null;
+            }
+            const start = new Date(dto.startDate);
+            const end = new Date(dto.endDate);
+            const availableCars = yield this.carService.getAvailableCars(start, end);
+            const car = availableCars.find(car => car.model === dto.model);
+            if (!car) {
+                yield this.logger.logError('no available cars this model', { model: dto.model, start, end });
                 return null;
             }
             const days = (new Date(dto.endDate).getTime() - new Date(dto.startDate).getTime()) / (1000 * 3600 * 24);
             const totalPrice = Math.round(days * car.dailyPrice);
             const connection = yield sqlConnection();
             const insertQuery = `INSERT INTO rentals (carId, customerId, startDate, endDate, totalPrice, status) VALUES (?,?,?,?,?,?)`;
-            const [result] = yield connection.execute(insertQuery, [dto.carId, dto.customerId, dto.startDate, dto.endDate, totalPrice, "active"]);
+            const [result] = yield connection.execute(insertQuery, [car.id, dto.customerId, dto.startDate, dto.endDate, totalPrice, "active"]);
             const insId = result.insertId;
             const [rows] = yield connection.execute(`SELECT * FROM rentals WHERE id = ${insId}`);
             const rentalRow = rows[0];
             const rental = rentalRow;
+            yield this.blockCarDates(car.id, dto.startDate, dto.endDate);
             yield this.logger.logAction('rental add', rental);
             return rental;
         });
@@ -84,6 +92,22 @@ export class RentalService {
             });
             yield this.logger.logAction('rental get all', rentals);
             return rentals;
+        });
+    }
+    blockCarDates(id, start, endDate) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const connection = yield sqlConnection();
+            const dates = [];
+            let current = new Date(start);
+            const end = new Date(endDate);
+            while (current <= end) {
+                dates.push(current.toISOString().split('T')[0]);
+                current.setDate(current.getDate() + 1);
+            }
+            for (const d of dates) {
+                yield connection.execute(`INSERT INTO car_availability (id,d,isAvailable) values (?,?,FALSE)
+                ON DUPLICATE KEY UPDATE isAvailable = FALSE`, [id, d]);
+            }
         });
     }
 }

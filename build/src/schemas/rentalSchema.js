@@ -1,9 +1,11 @@
 import Joi from "joi";
+import { CarModel } from "../models/enums/CarModel.js";
 export const rentalSchema = Joi.object({
-    carId: Joi.number().integer().min(1).required().messages({ 'number.base': 'carId must be a number',
-        'number.integer': 'carId must be an integer',
-        'number.min': 'carId must be positive',
-        'any.required': 'carId is required', }),
+    model: Joi.string().valid(...Object.values(CarModel)).required().messages({
+        "any.only": "Model must be a valid car model",
+        "any.required": "Model is required",
+        "string.base": "Model must be a string",
+    }),
     customerId: Joi.number().integer().min(1).required().messages({ 'number.base': 'customerId must be a number',
         'number.integer': 'customerId must be an integer',
         'number.min': 'customerId must be positive',

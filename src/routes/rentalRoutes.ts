@@ -17,7 +17,7 @@ const controller = new RentalController(rentalService);
 router.post("/",
     authenticate,
     authorize("rental:create"),
-    validateWithSchema(rentalSchema),
+    // validateWithSchema(rentalSchema),
     asyncHandler(controller.createRental))
 router.get('/',
     authenticate,

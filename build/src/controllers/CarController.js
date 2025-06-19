@@ -53,5 +53,31 @@ export class CarController {
             }
             res.sendStatus(200).json(car);
         });
+        this.getAvailableCars = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { startDate, endDate } = req.query;
+            if (!startDate || !endDate) {
+                throw new AppError("start date and end date are required", 400);
+            }
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                throw new AppError("invalid date format", 400);
+            }
+            const cars = yield this.carService.getAvailableCars(start, end);
+            res.status(200).json(cars);
+        });
+        this.getAvailableModels = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { startDate, endDate } = req.query;
+            if (!startDate || !endDate) {
+                throw new AppError("start date and end date are required", 400);
+            }
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                throw new AppError("invalid date format", 400);
+            }
+            const models = yield this.carService.getAvailableModels(start, end);
+            res.status(200).json(models);
+        });
     }
 }

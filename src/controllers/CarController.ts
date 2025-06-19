@@ -53,4 +53,30 @@ export class CarController {
         }
         res.sendStatus(200).json(car)
     }
+    getAvailableCars = async (req: Request, res: Response) => {
+        const {startDate, endDate} = req.query
+        if (!startDate || !endDate) {
+            throw new AppError("start date and end date are required", 400)
+        }
+        const start = new Date(startDate as string)
+        const end = new Date(endDate as string)
+        if(isNaN(start.getTime()) || isNaN(end.getTime())) {
+            throw new AppError("invalid date format", 400)
+        }
+        const cars = await this.carService.getAvailableCars(start,end)
+        res.status(200).json(cars)
+    }
+    getAvailableModels = async (req: Request, res: Response) => {
+        const {startDate, endDate} = req.query
+        if (!startDate || !endDate) {
+            throw new AppError("start date and end date are required", 400)
+        }
+        const start = new Date(startDate as string)
+        const end = new Date(endDate as string)
+        if(isNaN(start.getTime()) || isNaN(end.getTime())) {
+            throw new AppError("invalid date format", 400)
+        }
+        const models = await this.carService.getAvailableModels(start,end)
+        res.status(200).json(models)
+    }
 }

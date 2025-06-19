@@ -27,5 +27,11 @@ export const initDb =async () => {
     status ENUM("active","completed","cancelled") NOT NULL,
     FOREIGN KEY (carId) REFERENCES cars(id),
         FOREIGN KEY (customerId) REFERENCES customers(id) )`);
+    await connection.execute(`CREATE TABLE IF NOT EXISTS car_availability(
+    carId INT NOT NULL,
+    date DATE NOT NULL,
+    isAvailable BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (carId,date),
+        FOREIGN KEY (carId) REFERENCES cars(id))`)
     console.log('tables created')
 };

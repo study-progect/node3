@@ -53,21 +53,31 @@ export class RentalService implements IRentalService{
     }
     async createRental(dto:RentalDto):Promise<Rental | null> {
 
-        const car = await this.carService.getCarById(dto.carId)
+        // const car = await this.carService.getCarById(dto.carId)
         const custom = await this.customerService.getCustomerById(dto.customerId)
-        if(!car || !car.available || !custom){
-            await this.logger.logError(`car or customer not found or car not available`, {carId:dto.carId, customerId:dto.customerId})
+        if(!custom){
+            await this.logger.logError(`customer not found or car not available`, {customerId:dto.customerId})
             return null;
         }
+        const start = new Date(dto.startDate);
+        const end = new Date(dto.endDate);
+        const availableCars = await this.carService.getAvailableCars(start, end);
+        const car = availableCars.find(car => car.model === dto.model);
+        if(!car) {
+            await this.logger.logError('no available cars this model', {model:dto.model, start, end});
+            return null;
+        }
+
         const days = (new Date(dto.endDate).getTime() - new Date(dto.startDate).getTime()) / (1000 * 3600 * 24)
         const totalPrice = Math.round(days * car.dailyPrice)
         const connection = await sqlConnection()
         const insertQuery = `INSERT INTO rentals (carId, customerId, startDate, endDate, totalPrice, status) VALUES (?,?,?,?,?,?)`
-        const [result] = await connection.execute(insertQuery, [dto.carId, dto.customerId, dto.startDate, dto.endDate, totalPrice, "active"])
+        const [result] = await connection.execute(insertQuery, [car.id, dto.customerId, dto.startDate, dto.endDate, totalPrice, "active"])
         const insId = (result as any).insertId
         const [rows] = await connection.execute(`SELECT * FROM rentals WHERE id = ${insId}`)
         const rentalRow = (rows as any[])[0]
         const rental = rentalRow as Rental
+        await this.blockCarDates(car.id,dto.startDate,dto.endDate)
         await this.logger.logAction('rental add', rental)
         return rental
     }
@@ -121,4 +131,21 @@ export class RentalService implements IRentalService{
     // async load() {
     //     this.rentals = await this.storage.load();
     // }
+    private async blockCarDates(id: number, start: string, endDate: string) {
+        const connection = await sqlConnection()
+        const dates = []
+        let current = new Date(start);
+        const end = new Date(endDate);
+
+        while (current <= end) {
+            dates.push(current.toISOString().split('T')[0]);
+            current.setDate(current.getDate() + 1);
+        }
+        for (const d of dates) {
+            await connection.execute(`INSERT INTO car_availability (id,d,isAvailable) values (?,?,FALSE)
+                ON DUPLICATE KEY UPDATE isAvailable = FALSE`, [id,d]
+            )
+        }
+
+    }
 }
