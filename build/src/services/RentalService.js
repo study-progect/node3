@@ -105,7 +105,7 @@ export class RentalService {
                 current.setDate(current.getDate() + 1);
             }
             for (const d of dates) {
-                yield connection.execute(`INSERT INTO car_availability (id,d,isAvailable) values (?,?,FALSE)
+                yield connection.execute(`INSERT INTO car_availability (carId,date,isAvailable) values (?,?,FALSE)
                 ON DUPLICATE KEY UPDATE isAvailable = FALSE`, [id, d]);
             }
         });

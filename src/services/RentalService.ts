@@ -142,7 +142,7 @@ export class RentalService implements IRentalService{
             current.setDate(current.getDate() + 1);
         }
         for (const d of dates) {
-            await connection.execute(`INSERT INTO car_availability (id,d,isAvailable) values (?,?,FALSE)
+            await connection.execute(`INSERT INTO car_availability (carId,date,isAvailable) values (?,?,FALSE)
                 ON DUPLICATE KEY UPDATE isAvailable = FALSE`, [id,d]
             )
         }
